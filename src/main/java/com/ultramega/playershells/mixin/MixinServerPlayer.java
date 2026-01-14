@@ -41,8 +41,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.scores.Team;
 import net.minecraft.world.scores.Team.Visibility;
-import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.network.PacketDistributor;
+import com.ultramega.playershells.network.ModNetworking;
+import net.minecraftforge.event.ForgeEventFactory;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -56,6 +56,28 @@ import static com.ultramega.playershells.utils.MathUtils.findTargetLevel;
 
 @Mixin(ServerPlayer.class)
 public abstract class MixinServerPlayer extends Player implements ShellPlayer {
+    @Unique
+    private static void playershells$sanitizePlayerData(final CompoundTag tag) {
+        // Prevent stale vehicle/passenger links (e.g. "Received passengers for unknown entity") after body transfer.
+        tag.remove("RootVehicle");
+        tag.remove("Vehicle");
+        tag.remove("Passengers");
+
+        // Prevent carrying over transient death/damage/physics state between bodies.
+        tag.remove("Pos");
+        tag.remove("Motion");
+        tag.remove("Rotation");
+        tag.remove("FallDistance");
+        tag.remove("OnGround");
+        tag.remove("HurtTime");
+        tag.remove("HurtByTimestamp");
+        tag.remove("DeathTime");
+        tag.remove("Fire");
+        tag.remove("Air");
+        tag.remove("PortalCooldown");
+        tag.remove("TicksFrozen");
+    }
+
     @Shadow
     @Final
     public MinecraftServer server;
@@ -84,12 +106,14 @@ public abstract class MixinServerPlayer extends Player implements ShellPlayer {
         // A shell was found so transfer into it
         this.playershells$sendDeathMessageInChat();
         this.removeEntitiesOnShoulder();
+        this.stopRiding();
+        this.ejectPassengers();
         if (this.level().getGameRules().getBoolean(GameRules.RULE_FORGIVE_DEAD_PLAYERS)) {
             this.tellNeutralMobsThatIDied();
         }
 
         if (!this.isSpectator()) {
-            this.dropAllDeathLoot(this.serverLevel(), cause);
+            this.dropAllDeathLoot(cause);
         }
 
         this.dead = false;
@@ -98,14 +122,9 @@ public abstract class MixinServerPlayer extends Player implements ShellPlayer {
         this.setTicksFrozen(0);
         this.setSharedFlagOnFire(false);
 
-        // If keep inventory on, drop inventory and xp inside the new shell
-        if (this.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
-            this.playershells$dropItemsAndExp(shellState.shellForgePos());
-        }
-
         final ServerPlayer serverPlayer = (ServerPlayer) (Object) this;
         TransferPlayerPacket.transfer(this.server, serverPlayer, null, shellState.shellForgePos());
-        PacketDistributor.sendToPlayer(serverPlayer, new AfterDeathPacket(shellState.shellForgePos()));
+        ModNetworking.sendToPlayer(serverPlayer, new AfterDeathPacket(shellState.shellForgePos()));
         ci.cancel();
     }
 
@@ -127,11 +146,19 @@ public abstract class MixinServerPlayer extends Player implements ShellPlayer {
         final BlockState state = chunk.getBlockState(pos);
         final float yaw = state.hasProperty(FACING) ? state.getValue(FACING).toYRot() : 0f;
 
-        this.teleportTo(targetLevel, x, y, z, yaw, 0);
-
         this.removeAllEffects();
+        this.stopRiding();
+        this.ejectPassengers();
+        playershells$sanitizePlayerData(tag);
         this.load(tag);
         this.loadGameTypes(tag);
+        if (this.getHealth() <= 0.0F) {
+            this.setHealth(1.0F);
+        }
+        this.dead = false;
+
+        this.teleportTo(targetLevel, x, y, z, yaw, 0);
+        this.setDeltaMovement(0.0, 0.0, 0.0);
 
         final ServerPlayer serverPlayer = (ServerPlayer) (Object) this;
         final PlayerList playerList = this.server.getPlayerList();
@@ -142,12 +169,11 @@ public abstract class MixinServerPlayer extends Player implements ShellPlayer {
         this.getStats().markAllDirty();
         this.updateEffectVisibility();
         if (this.level() == targetLevel) {
-            playerList.sendActivePlayerEffects(serverPlayer);
             playerList.sendAllPlayerInfo(serverPlayer);
-            EventHooks.firePlayerRespawnEvent(serverPlayer, targetLevel.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY));
+            ForgeEventFactory.firePlayerRespawnEvent(serverPlayer, targetLevel.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY));
         }
 
-        PacketDistributor.sendToPlayer(serverPlayer, new FinishedSyncPacket());
+        ModNetworking.sendToPlayer(serverPlayer, new FinishedSyncPacket());
     }
 
     @Override
@@ -156,6 +182,10 @@ public abstract class MixinServerPlayer extends Player implements ShellPlayer {
 
         this.saveWithoutId(tag);
         this.storeGameTypes(tag);
+        playershells$sanitizePlayerData(tag);
+        if (tag.contains("Health") && tag.getFloat("Health") <= 0.0F) {
+            tag.putFloat("Health", 1.0F);
+        }
 
         return tag;
     }

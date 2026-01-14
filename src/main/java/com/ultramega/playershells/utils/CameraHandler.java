@@ -2,6 +2,7 @@ package com.ultramega.playershells.utils;
 
 import javax.annotation.Nullable;
 
+import com.ultramega.playershells.mixin.CameraAccessor;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
@@ -52,6 +53,10 @@ public final class CameraHandler {
 
     public static void cameraTick(final Camera camera) {
         final Minecraft mc = Minecraft.getInstance();
+        if (!isCameraOutsideOfPlayer()) {
+            ((CameraAccessor) (Object) camera).playershells$setDetached(false);
+            return;
+        }
         // Wait for teleport transition screen to end
         if (mc.screen instanceof ReceivingLevelScreen) {
             return;
@@ -73,10 +78,10 @@ public final class CameraHandler {
             }
             lastNowMs = now;
 
-            camera.detached = true;
+            ((CameraAccessor) (Object) camera).playershells$setDetached(true);
             applyAnimation(camera, animClockMs);
         }
-        camera.setRotation(camera.getYRot(), camera.getXRot(), 0.0F);
+        ((CameraAccessor) (Object) camera).playershells$setRotation(camera.getYRot(), camera.getXRot());
     }
 
     public static void setMovingAnimation(@Nullable final BlockPos startPosition,
@@ -152,8 +157,8 @@ public final class CameraHandler {
                 final float t = (float) elapsed / (float) PHASE1_MS;
                 final Vec3 pos = lerpVec3(p0Start, p1Forward, t);
                 final float yaw = lerpAngle(startYaw, startMidYaw, t);
-                camera.setPosition(pos);
-                camera.setRotation(yaw, 0.0f, 0.0F);
+                ((CameraAccessor) (Object) camera).playershells$setPosition(pos.x, pos.y, pos.z);
+                ((CameraAccessor) (Object) camera).playershells$setRotation(yaw, 0.0f);
             } else if (elapsed <= forwardTotal) {
                 // Phase 2: rise for 2s, yaw fixed at startMidYaw, animate pitch 0 -> 90
                 final long phase2Elapsed = elapsed - PHASE1_MS;
@@ -168,12 +173,12 @@ public final class CameraHandler {
                     pitch = 90.0f;
                 }
 
-                camera.setPosition(pos);
-                camera.setRotation(startMidYaw, pitch, 0.0F);
+                ((CameraAccessor) (Object) camera).playershells$setPosition(pos.x, pos.y, pos.z);
+                ((CameraAccessor) (Object) camera).playershells$setRotation(startMidYaw, pitch);
             } else {
                 // Switch to reverse run: start from top
-                camera.setPosition(p2Up);
-                camera.setRotation(startMidYaw, 90.0f, 0.0F);
+                ((CameraAccessor) (Object) camera).playershells$setPosition(p2Up.x, p2Up.y, p2Up.z);
+                ((CameraAccessor) (Object) camera).playershells$setRotation(startMidYaw, 90.0f);
                 reversing = true;
                 animClockMs = 0L;
                 if (onFinished != null) {
@@ -195,8 +200,8 @@ public final class CameraHandler {
             // Reverse of Phase 2: descend (and slide) yaw fixed at endMidYaw
             final float tDown = (float) elapsed / (float) PHASE2_MS;
             final Vec3 pos = lerpVec3(p2Up, e1Forward, tDown);
-            camera.setPosition(pos);
-            camera.setRotation(endMidYaw, 90.0F, 0.0F);
+            ((CameraAccessor) (Object) camera).playershells$setPosition(pos.x, pos.y, pos.z);
+            ((CameraAccessor) (Object) camera).playershells$setRotation(endMidYaw, 90.0F);
         } else if (elapsed <= PHASE2_MS + PHASE1_MS) {
             // Reverse of Phase 1: move 1 block back to end + rotate from endMidYaw -> endYaw
             final long phase1BackElapsed = elapsed - PHASE2_MS;
@@ -213,11 +218,11 @@ public final class CameraHandler {
                 pitch = 0.0f;
             }
 
-            camera.setPosition(pos);
-            camera.setRotation(yaw, pitch, 0.0F);
+            ((CameraAccessor) (Object) camera).playershells$setPosition(pos.x, pos.y, pos.z);
+            ((CameraAccessor) (Object) camera).playershells$setRotation(yaw, pitch);
         } else {
-            camera.setPosition(e0End);
-            camera.setRotation(endYaw, 0.0f, 0.0F);
+            ((CameraAccessor) (Object) camera).playershells$setPosition(e0End.x, e0End.y, e0End.z);
+            ((CameraAccessor) (Object) camera).playershells$setRotation(endYaw, 0.0f);
             resetPosition();
         }
     }

@@ -5,7 +5,6 @@ import com.ultramega.playershells.blockentities.ShellForgeBlockEntity.ShellState
 
 import java.util.Locale;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -26,12 +25,13 @@ public class ShellButton extends Button {
 
     @Override
     protected void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTick) {
-        // TODO: improve visual
         final Minecraft mc = Minecraft.getInstance();
-        graphics.setColor(1.0F, 0.0F, 0.0F, this.alpha);
-        RenderSystem.enableBlend();
-        RenderSystem.enableDepthTest();
-        graphics.blitSprite(SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        final int alpha255 = Mth.ceil(this.alpha * 255.0F);
+        final int baseRgb = this.active
+            ? (this.isHoveredOrFocused() ? 0x5A5A5A : 0x3A3A3A)
+            : 0x202020;
+        final int bgColor = (alpha255 << 24) | baseRgb;
+        graphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), bgColor);
 
         // Render label
         final String text = this.getMessage().getString();
@@ -45,7 +45,6 @@ public class ShellButton extends Button {
             super.renderString(graphics, mc.font, color);
         }
 
-        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     public void setMessage(final ShellStates state) {
