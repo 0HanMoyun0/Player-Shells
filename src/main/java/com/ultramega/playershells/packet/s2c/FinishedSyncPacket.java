@@ -1,12 +1,13 @@
 package com.ultramega.playershells.packet.s2c;
 
 import com.ultramega.playershells.utils.CameraHandler;
+
+import java.util.function.Supplier;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 public record FinishedSyncPacket() {
     public static void encode(final FinishedSyncPacket data, final FriendlyByteBuf buf) {

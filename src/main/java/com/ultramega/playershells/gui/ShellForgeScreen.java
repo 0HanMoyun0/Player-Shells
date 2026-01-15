@@ -26,7 +26,7 @@ import static com.ultramega.playershells.PlayerShells.MODID;
 
 public class ShellForgeScreen extends AbstractContainerScreen<ShellForgeContainerMenu> {
     private static final ResourceLocation BACKGROUND = new ResourceLocation(MODID, "textures/gui/shell_forge.png");
-    private static final ResourceLocation SLOT_SPRITE = new ResourceLocation("minecraft", "container/slot");
+    private static final ResourceLocation SLOT_SPRITE = new ResourceLocation(MODID, "textures/gui/slot.png");
     private static final int ENERGY_BAR_HEIGHT = 52;
     private static final float STATUS_TEXT_SCALE = 0.5F;
 
@@ -89,9 +89,10 @@ public class ShellForgeScreen extends AbstractContainerScreen<ShellForgeContaine
 
     @Override
     protected void renderBg(final GuiGraphics graphics, final float partialTicks, final int mouseX, final int mouseY) {
+        super.renderBackground(graphics);
         graphics.blit(BACKGROUND, this.leftPos, this.topPos, 0, 0, this.getXSize(), this.getYSize());
         if (this.getMenu().getBlockEntity().getShellState() == ShellStates.CREATE) {
-            graphics.fill(this.leftPos + 79, this.topPos + 16, this.leftPos + 79 + 18, this.topPos + 16 + 18, 0xFF404040);
+            graphics.blit(SLOT_SPRITE, this.leftPos + 79, this.topPos + 16, 0, 0, 18, 18, 18, 18);
         }
 
         final PoseStack poseStack = graphics.pose();

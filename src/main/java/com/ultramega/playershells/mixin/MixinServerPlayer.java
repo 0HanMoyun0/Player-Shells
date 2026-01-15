@@ -1,6 +1,7 @@
 package com.ultramega.playershells.mixin;
 
 import com.ultramega.playershells.Config;
+import com.ultramega.playershells.network.ModNetworking;
 import com.ultramega.playershells.packet.c2s.TransferPlayerPacket;
 import com.ultramega.playershells.packet.s2c.AfterDeathPacket;
 import com.ultramega.playershells.packet.s2c.FinishedSyncPacket;
@@ -41,7 +42,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.scores.Team;
 import net.minecraft.world.scores.Team.Visibility;
-import com.ultramega.playershells.network.ModNetworking;
 import net.minecraftforge.event.ForgeEventFactory;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -56,31 +56,10 @@ import static com.ultramega.playershells.utils.MathUtils.findTargetLevel;
 
 @Mixin(ServerPlayer.class)
 public abstract class MixinServerPlayer extends Player implements ShellPlayer {
-    @Unique
-    private static void playershells$sanitizePlayerData(final CompoundTag tag) {
-        // Prevent stale vehicle/passenger links (e.g. "Received passengers for unknown entity") after body transfer.
-        tag.remove("RootVehicle");
-        tag.remove("Vehicle");
-        tag.remove("Passengers");
-
-        // Prevent carrying over transient death/damage/physics state between bodies.
-        tag.remove("Pos");
-        tag.remove("Motion");
-        tag.remove("Rotation");
-        tag.remove("FallDistance");
-        tag.remove("OnGround");
-        tag.remove("HurtTime");
-        tag.remove("HurtByTimestamp");
-        tag.remove("DeathTime");
-        tag.remove("Fire");
-        tag.remove("Air");
-        tag.remove("PortalCooldown");
-        tag.remove("TicksFrozen");
-    }
-
     @Shadow
     @Final
     public MinecraftServer server;
+
     @Shadow
     public ServerGamePacketListenerImpl connection;
     @Shadow
@@ -121,6 +100,11 @@ public abstract class MixinServerPlayer extends Player implements ShellPlayer {
         this.clearFire();
         this.setTicksFrozen(0);
         this.setSharedFlagOnFire(false);
+
+        // If keep inventory on, drop inventory and xp inside the new shell
+        if (this.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
+            this.playershells$dropItemsAndExp(shellState.shellForgePos());
+        }
 
         final ServerPlayer serverPlayer = (ServerPlayer) (Object) this;
         TransferPlayerPacket.transfer(this.server, serverPlayer, null, shellState.shellForgePos());
@@ -238,6 +222,28 @@ public abstract class MixinServerPlayer extends Player implements ShellPlayer {
         ExperienceOrb.award((ServerLevel) this.level(), pos.getCenter(), this.totalExperience);
     }
 
+    @Unique
+    private static void playershells$sanitizePlayerData(final CompoundTag tag) {
+        // Prevent stale vehicle/passenger links (e.g. "Received passengers for unknown entity") after body transfer.
+        tag.remove("RootVehicle");
+        tag.remove("Vehicle");
+        tag.remove("Passengers");
+
+        // Prevent carrying over transient death/damage/physics state between bodies.
+        tag.remove("Pos");
+        tag.remove("Motion");
+        tag.remove("Rotation");
+        tag.remove("FallDistance");
+        tag.remove("OnGround");
+        tag.remove("HurtTime");
+        tag.remove("HurtByTimestamp");
+        tag.remove("DeathTime");
+        tag.remove("Fire");
+        tag.remove("Air");
+        tag.remove("PortalCooldown");
+        tag.remove("TicksFrozen");
+    }
+
     @Shadow
     public abstract void teleportTo(ServerLevel newLevel, double x, double y, double z, float yaw, float pitch);
 
@@ -254,5 +260,5 @@ public abstract class MixinServerPlayer extends Player implements ShellPlayer {
     public abstract void loadGameTypes(@Nullable CompoundTag tag);
 
     @Shadow
-    public abstract void storeGameTypes(CompoundTag tag);
+    protected abstract void storeGameTypes(CompoundTag tag);
 }

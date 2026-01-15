@@ -3,8 +3,8 @@ package com.ultramega.playershells.utils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
 public record PositionReference(BlockPos pos, Direction facing, ResourceLocation dimension) {
     private static final String POS_TAG = "pos";

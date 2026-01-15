@@ -14,12 +14,13 @@ uniform float Percentage;
 uniform float GuiScale;
 uniform int PackedRGBColor;
 
-in float fragY;
+in vec3 fragPos;
 in float vertexDistance;
 in vec4 vertexColor;
 in vec4 lightMapColor;
 in vec4 overlayColor;
 in vec2 texCoord0;
+in vec4 normal;
 
 out vec4 fragColor;
 
@@ -36,9 +37,8 @@ void main() {
         discard;
     }
 
-    float baseY = (GuiScale > 1.0) ? 0.0 : EntityPositionY;
-    float cutoff = baseY + EntityHeight * (Percentage / 100.0);
-    if (fragY >= cutoff) {
+    float cutoff = EntityPositionY + EntityHeight * (Percentage / 100.0);
+    if (fragPos.y >= cutoff) {
         discard;
     }
 
@@ -46,8 +46,8 @@ void main() {
     color.rgb = mix(overlayColor.rgb, color.rgb, overlayColor.a);
     color *= lightMapColor;
 
-    if (fragY >= cutoff - 0.05 * GuiScale &&
-        fragY <= cutoff) {
+    if (fragPos.y >= cutoff - 0.05 * GuiScale &&
+        fragPos.y <= cutoff) {
         color.rgb = unpackRGB8(PackedRGBColor);
     }
 

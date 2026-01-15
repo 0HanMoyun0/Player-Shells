@@ -9,7 +9,9 @@ import com.ultramega.playershells.utils.ObservableEnergyStorage;
 import com.ultramega.playershells.utils.OwnerData;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -24,13 +26,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraft.core.Direction;
+import net.minecraftforge.items.ItemStackHandler;
 
 public class CentrifugeBlockEntity extends BlockEntity implements MenuProvider, Nameable {
     public static final int PROCESSING_TOTAL_TIME = 200;

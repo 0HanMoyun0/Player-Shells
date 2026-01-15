@@ -1,6 +1,7 @@
 package com.ultramega.playershells.blockentities;
 
 import com.ultramega.playershells.Config;
+import com.ultramega.playershells.blocks.AbstractMultiblockBlock;
 import com.ultramega.playershells.blocks.ShellForgeBlock.BoolProperty;
 import com.ultramega.playershells.container.ShellForgeContainerMenu;
 import com.ultramega.playershells.registry.ModBlockEntityTypes;
@@ -17,8 +18,8 @@ import com.ultramega.playershells.utils.SoundHandler;
 
 import java.util.Objects;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
+
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -27,7 +28,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Nameable;
@@ -196,7 +196,7 @@ public class ShellForgeBlockEntity extends BlockEntity implements MenuProvider, 
             final ShellState shellState = ShellSavedData.getShellData(serverLevel).get(this.playerUuid, this.shellUuid);
             if (shellState != null) {
                 shellPlayer.playershells$applyData(shellState.playerData(), shellState.shellForgePos());
-                this.playerState = PlayerStates.GOING_OUT;
+                this.playerState = PlayerStates.TRANSFERRED;
                 this.exterminateShell();
 
                 setValue(this.getBlockState(), this.level, this.getBlockPos(), new BoolProperty(OPEN, true));
@@ -362,7 +362,7 @@ public class ShellForgeBlockEntity extends BlockEntity implements MenuProvider, 
 
     @Override
     public AABB getRenderBoundingBox() {
-        return new AABB(this.getBlockPos()).expandTowards(0, com.ultramega.playershells.blocks.AbstractMultiblockBlock.isBottomHalf(this.getBlockState()) ? 1 : -1, 0);
+        return new AABB(this.getBlockPos()).expandTowards(0, AbstractMultiblockBlock.isBottomHalf(this.getBlockState()) ? 1 : -1, 0);
     }
 
     @Override

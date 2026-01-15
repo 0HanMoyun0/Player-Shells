@@ -15,8 +15,7 @@ import static com.ultramega.playershells.PlayerShells.MODID;
 
 public class CentrifugeScreen extends AbstractContainerScreen<CentrifugeContainerMenu> {
     private static final ResourceLocation BACKGROUND = new ResourceLocation(MODID, "textures/gui/centrifuge.png");
-    private static final ResourceLocation PROGRESS_BG = new ResourceLocation(MODID, "textures/gui/sprites/widget/progress_bar_background.png");
-    private static final ResourceLocation PROGRESS_FILL = new ResourceLocation(MODID, "textures/gui/sprites/widget/green_progress_bar.png");
+    private static final ResourceLocation FURNACE = new ResourceLocation("textures/gui/container/furnace.png");
     private static final int ENERGY_BAR_HEIGHT = 52;
 
     public CentrifugeScreen(final CentrifugeContainerMenu menu, final Inventory playerInventory, final Component title) {
@@ -31,6 +30,7 @@ public class CentrifugeScreen extends AbstractContainerScreen<CentrifugeContaine
 
     @Override
     protected void renderBg(final GuiGraphics graphics, final float partialTicks, final int mouseX, final int mouseY) {
+        super.renderBackground(graphics);
         graphics.blit(BACKGROUND, this.leftPos, this.topPos, 0, 0, this.getXSize(), this.getYSize());
 
         // Draw energy bar
@@ -41,13 +41,8 @@ public class CentrifugeScreen extends AbstractContainerScreen<CentrifugeContaine
         graphics.blit(BACKGROUND, this.leftPos + 8, this.topPos + 18, 8, 18, 6, ENERGY_BAR_HEIGHT - energyLevel);
 
         // Draw progress
-        final int barX = this.leftPos + 79;
-        final int barY = this.topPos + 34;
-        final int barWidth = 24;
-        final int barHeight = 16;
-        graphics.blit(PROGRESS_BG, barX - 1, barY - 1, 0, 0, barWidth + 2, barHeight + 2, 82, 18);
-        final int filledWidth = Mth.clamp(Mth.ceil(this.menu.getProcessingProgress() * barWidth), 0, barWidth);
-        graphics.blit(PROGRESS_FILL, barX, barY, 0, 0, filledWidth, barHeight, 80, 16);
+        final int width = Mth.ceil((this.menu.getProcessingProgress() * 24.0F));
+        graphics.blit(FURNACE, this.leftPos + 79, this.topPos + 34, 176, 14, width, 16);
     }
 
     @Override

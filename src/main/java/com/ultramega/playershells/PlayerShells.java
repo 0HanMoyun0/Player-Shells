@@ -1,12 +1,12 @@
 package com.ultramega.playershells;
 
+import com.ultramega.playershells.network.ModNetworking;
 import com.ultramega.playershells.registry.ModBlockEntityTypes;
 import com.ultramega.playershells.registry.ModBlocks;
 import com.ultramega.playershells.registry.ModCreativeTabs;
 import com.ultramega.playershells.registry.ModItems;
 import com.ultramega.playershells.registry.ModMenuTypes;
 import com.ultramega.playershells.registry.ModSoundEvents;
-import com.ultramega.playershells.network.ModNetworking;
 
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;

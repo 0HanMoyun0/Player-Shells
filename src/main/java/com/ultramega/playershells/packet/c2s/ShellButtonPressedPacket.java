@@ -2,12 +2,12 @@ package com.ultramega.playershells.packet.c2s;
 
 import com.ultramega.playershells.blockentities.ShellForgeBlockEntity;
 
+import java.util.function.Supplier;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 public record ShellButtonPressedPacket(BlockPos shellForgePos) {
     public static void encode(final ShellButtonPressedPacket data, final FriendlyByteBuf buf) {

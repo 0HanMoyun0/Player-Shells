@@ -4,8 +4,8 @@ import com.ultramega.playershells.blockentities.ShellForgeBlockEntity;
 import com.ultramega.playershells.blockentities.ShellForgeBlockEntity.ShellStates;
 import com.ultramega.playershells.utils.PositionReference;
 
-import javax.annotation.Nullable;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;

@@ -2,11 +2,11 @@ package com.ultramega.playershells.packet.c2s;
 
 import com.ultramega.playershells.storage.ShellSavedData;
 
+import java.util.function.Supplier;
+
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.network.NetworkEvent;
-import net.minecraft.network.FriendlyByteBuf;
-
-import java.util.function.Supplier;
 
 public record ValidateShellForgePacket() {
     public static void encode(final ValidateShellForgePacket data, final FriendlyByteBuf buf) {

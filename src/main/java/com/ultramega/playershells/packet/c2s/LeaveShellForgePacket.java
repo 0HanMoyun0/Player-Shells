@@ -3,12 +3,12 @@ package com.ultramega.playershells.packet.c2s;
 import com.ultramega.playershells.blockentities.ShellForgeBlockEntity;
 import com.ultramega.playershells.blockentities.ShellForgeBlockEntity.PlayerStates;
 
+import java.util.function.Supplier;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 public record LeaveShellForgePacket(BlockPos shellForgePos) {
     public static void encode(final LeaveShellForgePacket data, final FriendlyByteBuf buf) {

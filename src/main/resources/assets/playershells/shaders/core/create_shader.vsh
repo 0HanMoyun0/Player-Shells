@@ -19,18 +19,23 @@ uniform mat3 IViewRotMat;
 uniform vec3 Light0_Direction;
 uniform vec3 Light1_Direction;
 uniform int FogShape;
-uniform float EntityPositionY;
+uniform vec3 CameraPos;
 uniform float GuiScale;
 
-out float fragY;
+out vec3 fragPos;
 out float vertexDistance;
 out vec4 vertexColor;
 out vec4 lightMapColor;
 out vec4 overlayColor;
 out vec2 texCoord0;
+out vec4 normal;
 
 void main() {
-    fragY = (GuiScale > 1.0) ? Position.y : (EntityPositionY + Position.y);
+    if (GuiScale > 1) {
+        fragPos = IViewRotMat * Position * -1;
+    } else {
+        fragPos = IViewRotMat * Position + CameraPos.y;
+    }
 
     gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
 
@@ -39,4 +44,5 @@ void main() {
     lightMapColor = texelFetch(Sampler2, UV2 / 16, 0);
     overlayColor = texelFetch(Sampler1, UV1, 0);
     texCoord0 = UV0;
+    normal = ProjMat * ModelViewMat * vec4(Normal, 0.0);
 }

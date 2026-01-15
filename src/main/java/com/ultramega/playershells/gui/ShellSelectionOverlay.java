@@ -18,11 +18,9 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -31,7 +29,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -39,7 +36,6 @@ import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
@@ -87,8 +83,6 @@ public class ShellSelectionOverlay extends RadialMenuRenderer<ShellBundle.ShellE
 
         // Top left
         this.renderInventory(graphics, pose, centerX, centerY, invWidth, invHeight, shellEntry);
-
-        // 1.20.1: HUD（护甲/饥饿/心）渲染逻辑与 1.21+ 不同，这里先不渲染该面板。
     }
 
     private void renderInventory(final GuiGraphics graphics,
@@ -142,7 +136,6 @@ public class ShellSelectionOverlay extends RadialMenuRenderer<ShellBundle.ShellE
                              final int invWidth,
                              final int invHeight,
                              final ShellEntry shellEntry) {
-        // 1.20.1 下该面板暂不渲染
     }
 
     @Override

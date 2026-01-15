@@ -5,6 +5,7 @@ import com.ultramega.playershells.registry.ModItems;
 import com.ultramega.playershells.utils.OwnerData;
 
 import java.util.function.Consumer;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;

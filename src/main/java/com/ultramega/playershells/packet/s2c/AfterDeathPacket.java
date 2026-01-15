@@ -3,10 +3,10 @@ package com.ultramega.playershells.packet.s2c;
 import com.ultramega.playershells.utils.CameraHandler;
 import com.ultramega.playershells.utils.PositionReference;
 
+import java.util.function.Supplier;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 public record AfterDeathPacket(PositionReference shellForgePos) {
     public static void encode(final AfterDeathPacket data, final FriendlyByteBuf buf) {

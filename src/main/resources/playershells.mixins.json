@@ -8,7 +8,6 @@
     "MixinServerPlayer"
   ],
   "client": [
-    "CameraAccessor",
     "MixinCamera",
     "MixinEntityRenderDispatcher",
     "RenderStateShardAccessor"
